@@ -149,11 +149,15 @@ func NewDataGate[T, F interface{}](
 	primaryKey string,
 	pool *pgxpool.Pool,
 	sqBuilder squirrel.StatementBuilderType,
-) DataGate[T, F] {
+) (DataGate[T, F], error) {
+	if pool == nil {
+		return nil, fmt.Errorf("pool is nil")
+	}
+
 	return &dataGate[T, F]{
 		tableName:  tableName,
 		primaryKey: primaryKey,
 		pool:       pool,
 		sqBuilder:  sqBuilder,
-	}
+	}, nil
 }
