@@ -1,6 +1,6 @@
 module github.com/gippuss/datagate
 
-go 1.24.1
+go 1.23
 
 require (
 	github.com/Masterminds/squirrel v1.5.4

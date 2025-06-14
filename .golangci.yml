@@ -1,0 +1,16 @@
+issues:
+  exclude-files:
+    - ".*_mock.go$"
+    - ".*_test.go$"
+
+linters:
+  enable:
+    - gofmt
+    - golint
+    - govet
+    - errcheck
+    - staticcheck
+
+run:
+  timeout: 5m
+  tests: true

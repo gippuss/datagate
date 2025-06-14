@@ -11,3 +11,8 @@ type Tx interface {
 type Row interface {
 	pgx.Row
 }
+
+//go:generate minimock -i Rows -o mocks/rows_mock.go
+type Rows interface {
+	pgx.Rows
+}
