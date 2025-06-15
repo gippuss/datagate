@@ -1,18 +1,79 @@
-issues:
-  exclude-files:
-    - ".*_mock.go$"
-    - ".*_test.go$"
+# Версия конфигурации
+version: "2"
 
-linters:
-  enable:
-    - revive
-    - errcheck
-    - gosimple
-    - govet
-    - ineffassign
-    - staticcheck
-    - unused
-
+# Настройки запуска
 run:
+  # Таймаут для анализа
   timeout: 5m
+  # Какие файлы проверять
   tests: true
+  # Пропускать vendor директории
+  skip-dirs:
+    - vendor
+
+# Настройки линтеров
+linters:
+  # Включить дополнительные линтеры
+  enable:
+    - errcheck      # Проверка необработанных ошибок
+    - gosimple      # Упрощение кода
+    - govet         # Стандартный vet
+    - ineffassign   # Неиспользуемые присвоения
+    - staticcheck   # Расширенная статическая проверка
+    - unused        # Неиспользуемый код
+    - gofmt         # Форматирование
+    - goimports     # Импорты
+    - misspell      # Опечатки в комментариях
+    - revive        # Замена golint
+    - gocyclo       # Цикломатическая сложность
+    - goconst       # Повторяющиеся строки
+    - gofumpt       # Строгое форматирование
+    
+  # Отключить проблемные линтеры (опционально)
+  disable:
+    - typecheck     # Отключаем если есть проблемы с типами
+
+# Настройки конкретных линтеров
+linters-settings:
+  # Настройки revive (замена golint)
+  revive:
+    rules:
+      - name: exported
+        disabled: false
+      - name: package-comments
+        disabled: true
+  
+  # Настройки gocyclo (сложность функций)
+  gocyclo:
+    min-complexity: 15
+  
+  # Настройки линии кода
+  lll:
+    line-length: 120
+  
+  # Настройки gofumpt
+  gofumpt:
+    extra-rules: true
+
+# Настройки вывода
+output:
+  # Формат вывода
+  formats:
+    - format: colored-line-number
+      path: stdout
+  # Показывать путь относительно рабочей директории
+  print-issued-lines: true
+  print-linter-name: true
+
+# Настройки issue
+issues:
+  # Исключить из проверки файлы по маске
+  exclude-dirs:
+    - testdata
+  
+  # Не выводить issue для файлов, которые полностью игнорируются линтерами
+  exclude-use-default: false
+  
+  # Максимум issue для вывода (0 = без лимита)
+  max-issues-per-linter: 0
+  max-same-issues: 0
