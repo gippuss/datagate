@@ -1,0 +1,18 @@
+issues:
+  exclude-files:
+    - ".*_mock.go$"
+    - ".*_test.go$"
+
+linters:
+  enable:
+    - revive
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+run:
+  timeout: 5m
+  tests: true

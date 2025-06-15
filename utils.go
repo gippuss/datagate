@@ -37,11 +37,27 @@ func extractStructFieldsByTag(s interface{}, tagName string) map[string]interfac
 }
 
 func buildSqlFiltersFromStruct(s interface{}) []squirrel.Sqlizer {
-	var result []squirrel.Sqlizer
+	val := reflect.ValueOf(s)
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+	if val.Kind() != reflect.Struct {
+		return nil
+	}
 
-	values := extractStructFieldsByTag(s, filterTag)
-	for key, value := range values {
-		result = append(result, squirrel.Eq{key: value})
+	var result []squirrel.Sqlizer
+	typ := val.Type()
+
+	for i := 0; i < val.Type().NumField(); i++ {
+		if val.Field(i).IsNil() {
+			continue
+		}
+		tag := typ.Field(i).Tag.Get(filterTag)
+		if tag == "" {
+			continue
+		}
+
+		result = append(result, squirrel.Eq{tag: val.Field(i).Interface()})
 	}
 
 	return result
