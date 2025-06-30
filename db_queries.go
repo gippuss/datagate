@@ -31,6 +31,7 @@ type dataGate[T, F interface{}] struct {
 	tx pgx.Tx
 }
 
+// GetWithTransaction runs all queries with the given transaction
 func (dg dataGate[T, F]) GetWithTransaction(tx pgx.Tx) DataGate[T, F] {
 	return &dataGate[T, F]{
 		tableName:  dg.tableName,
@@ -42,6 +43,7 @@ func (dg dataGate[T, F]) GetWithTransaction(tx pgx.Tx) DataGate[T, F] {
 	}
 }
 
+// Create create a new item in the db
 func (dg dataGate[T, F]) Create(ctx context.Context, data T) (int64, error) {
 	sql, args, err := dg.sqBuilder.Insert(dg.tableName).
 		SetMap(extractStructFieldsByTag(data, insertTag)).
@@ -68,12 +70,13 @@ func (dg dataGate[T, F]) Create(ctx context.Context, data T) (int64, error) {
 	return id, nil
 }
 
+// Get returns a list of items from db
 func (dg dataGate[T, F]) Get(ctx context.Context, filter F) ([]T, error) {
 	var item T
 
 	var columns []string
 	values := extractStructFieldsByTag(item, dbTag)
-	for key, _ := range values {
+	for key := range values {
 		columns = append(columns, key)
 	}
 
@@ -97,6 +100,7 @@ func (dg dataGate[T, F]) Get(ctx context.Context, filter F) ([]T, error) {
 	return items, err
 }
 
+// Update updates an item in the db
 func (dg dataGate[T, F]) Update(ctx context.Context, filter F, data map[string]interface{}) error {
 	query := dg.sqBuilder.Update(dg.tableName).
 		SetMap(data)
@@ -121,6 +125,7 @@ func (dg dataGate[T, F]) Update(ctx context.Context, filter F, data map[string]i
 	return nil
 }
 
+// Delete deletes an item from the db
 func (dg dataGate[T, F]) Delete(ctx context.Context, filter F) error {
 	query := dg.sqBuilder.Delete(dg.tableName)
 	for _, sqlizer := range buildSqlFiltersFromStruct(filter) {
@@ -144,16 +149,21 @@ func (dg dataGate[T, F]) Delete(ctx context.Context, filter F) error {
 	return nil
 }
 
+// NewDataGate creates a new DataGate
 func NewDataGate[T, F interface{}](
 	tableName string,
 	primaryKey string,
 	pool *pgxpool.Pool,
 	sqBuilder squirrel.StatementBuilderType,
-) DataGate[T, F] {
+) (DataGate[T, F], error) {
+	if pool == nil {
+		return nil, fmt.Errorf("pool is nil")
+	}
+
 	return &dataGate[T, F]{
 		tableName:  tableName,
 		primaryKey: primaryKey,
 		pool:       pool,
 		sqBuilder:  sqBuilder,
-	}
+	}, nil
 }
