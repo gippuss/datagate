@@ -238,7 +238,7 @@ func (s *DataGateIntegrationTestSuite) TestDeleteNonExistent() {
 }
 
 func (s *DataGateIntegrationTestSuite) TestNewDataGateValidation() {
-	_, err := datagate.NewDataGate[User, UserFilter]("users", "id", nil, s.sqBuilder)
+	_, err := datagate.NewDataGate[User, UserFilter]("users", "id", nil)
 	assert.Error(s.T(), err)
 	assert.Contains(s.T(), err.Error(), "pool is nil")
 }

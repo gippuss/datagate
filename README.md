@@ -57,7 +57,6 @@ dataGate, err := datagate.NewDataGate[User, UserFilter](
     "users",      // table name
     "id",         // primary key
     pool,
-    sqBuilder,
 )
 ```
 
