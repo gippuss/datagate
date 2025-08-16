@@ -1,0 +1,43 @@
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gofmt
+    - goimports
+    - misspell
+    - revive
+    - gocyclo
+    - goconst
+    - gofumpt
+
+linters-settings:
+  revive:
+    rules:
+      - name: exported
+        disabled: false
+      - name: package-comments
+        disabled: true
+  gocyclo:
+    min-complexity: 15
+  lll:
+    line-length: 120
+  gofumpt:
+    extra-rules: true
+
+issues:
+  exclude-dirs:
+    - vendor
+    - testdata
+  exclude-files:
+    - ".*\\.pb\\.go$"
+    - ".*generated.*\\.go$"
+  max-issues-per-linter: 0
+  max-same-issues: 0
