@@ -7,6 +7,7 @@ import (
 	"github.com/Masterminds/squirrel"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -113,13 +114,17 @@ func (dg dataGate[T, F]) Update(ctx context.Context, filter F, data map[string]i
 		return fmt.Errorf("failed to build query: %w", err)
 	}
 
+	var rowsAffected pgconn.CommandTag
 	if dg.tx == nil {
-		_, err = dg.pool.Exec(ctx, sql, args...)
+		rowsAffected, err = dg.pool.Exec(ctx, sql, args...)
 	} else {
-		_, err = dg.tx.Exec(ctx, sql, args...)
+		rowsAffected, err = dg.tx.Exec(ctx, sql, args...)
 	}
 	if err != nil {
 		return fmt.Errorf("failed exec query: %w", err)
+	}
+	if rowsAffected.RowsAffected() == 0 {
+		return ErrNoRowsAffected
 	}
 
 	return nil
@@ -137,13 +142,17 @@ func (dg dataGate[T, F]) Delete(ctx context.Context, filter F) error {
 		return fmt.Errorf("failed to build query: %w", err)
 	}
 
+	var res pgconn.CommandTag
 	if dg.tx == nil {
-		_, err = dg.pool.Exec(ctx, sql, args...)
+		res, err = dg.pool.Exec(ctx, sql, args...)
 	} else {
-		_, err = dg.tx.Exec(ctx, sql, args...)
+		res, err = dg.tx.Exec(ctx, sql, args...)
 	}
 	if err != nil {
 		return fmt.Errorf("failed exec query: %w", err)
+	}
+	if res.RowsAffected() == 0 {
+		return ErrNoRowsAffected
 	}
 
 	return nil
