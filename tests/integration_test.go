@@ -224,7 +224,7 @@ func (s *DataGateIntegrationTestSuite) TestUpdateNonExistent() {
 	updateData := map[string]interface{}{"name": "Updated"}
 
 	err := s.dataGate.Update(ctx, filter, updateData)
-	assert.NoError(s.T(), err)
+	assert.Error(s.T(), err)
 }
 
 func (s *DataGateIntegrationTestSuite) TestDeleteNonExistent() {
@@ -234,7 +234,7 @@ func (s *DataGateIntegrationTestSuite) TestDeleteNonExistent() {
 	filter := UserFilter{ID: &nonExistentID}
 
 	err := s.dataGate.Delete(ctx, filter)
-	assert.NoError(s.T(), err)
+	assert.Error(s.T(), err)
 }
 
 func (s *DataGateIntegrationTestSuite) TestNewDataGateValidation() {

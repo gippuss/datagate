@@ -1,6 +1,7 @@
 package datagate
 
 import (
+	"errors"
 	"reflect"
 
 	"github.com/Masterminds/squirrel"
@@ -11,6 +12,8 @@ const (
 	filterTag = "filter"
 	insertTag = "insert"
 )
+
+var ErrNoRowsAffected = errors.New("no rows affected")
 
 func extractStructFieldsByTag(s interface{}, tagName string) map[string]interface{} {
 	val := reflect.ValueOf(s)
